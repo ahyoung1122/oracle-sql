@@ -16,21 +16,20 @@ public class EmpDAO {
 		
 		Connection conn = DBHelper.getConnection();
 		
-		String sql = "SELECT ename,\r\n"
-				+ "        job,\r\n"
-				+ "        CASE\r\n"
-				+ "        WHEN job = 'PRESIDENT' Then '빨강'\r\n"
-				+ "        WHEN job = 'MANAGER' THEN '주황'\r\n"
-				+ "        WHEN job = 'ANALYST' THEN '노랑'\r\n"
-				+ "        WHEN job = 'CLERK' THEN '초록'\r\n"
-				+ "        ELSE '파랑' END color\r\n"
-				+ "FROM emp\r\n"
-				+ "ORDER BY (CASE \r\n"
-				+ "        WHEN color = '빨강' THEN 1\r\n"
-				+ "        WHEN color = '주황' THEN 2\r\n"
-				+ "        WHEN color = '노랑' THEN 3\r\n"
-				+ "        WHEN color = '초록' THEN 4\r\n"
-				+ "        ELSE 5 END) ASC;";
+		String sql = 
+				"SELECT ename,job, CASE\r\n"
+				+ "					        WHEN job = 'PRESIDENT' Then '빨강'\r\n"
+				+ "					        WHEN job = 'MANAGER' THEN '주황'\r\n"
+				+ "					        WHEN job = 'ANALYST' THEN '노랑'\r\n"
+				+ "					        WHEN job = 'CLERK' THEN '초록'\r\n"
+				+ "					        ELSE '파랑' END color\r\n"
+				+ "		FROM emp\r\n"
+				+ "		ORDER BY (CASE \r\n"
+				+ "			        WHEN color = '빨강' THEN 1\r\n"
+				+ "			        WHEN color = '주황' THEN 2\r\n"
+				+ "			        WHEN color = '노랑' THEN 3\r\n"
+				+ "			        WHEN color = '초록' THEN 4\r\n"
+				+ "			        ELSE 5 END) ASC\r\n";
 		
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		ResultSet rs = stmt.executeQuery();
@@ -49,21 +48,24 @@ public class EmpDAO {
 	public static ArrayList<HashMap<String,Integer>> selectDeptNoCntList() 
 			throws Exception{
 		ArrayList<HashMap<String,Integer>> list = 
-				new ArrayList<HashMap<String,Integer>>();
+				new ArrayList<>();
 		
 		Connection conn = DBHelper.getConnection();
-		String sql = "SELECT COUNT(*) cnt, deptno FROM emp "
-				+ "WHERE deptno IS NOT NULL GROUP BY deptno"
-				+ "ORDER BY deptno asc";
+		String sql = "SELECT deptno deptNo, COUNT(*) cnt "
+				+ "FROM emp "
+				+ "WHERE deptno IS NOT NULL GROUP BY deptno "
+				+ "ORDER BY deptno ASC";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		ResultSet rs = stmt.executeQuery();
 		while(rs.next()) {
 			HashMap<String,Integer> m = 
-				new HashMap<String,Integer>();
+				new HashMap<>();
 					m.put("cnt", rs.getInt("cnt"));
-					m.put("deptno", rs.getInt("deptno"));
+					m.put("deptNo", rs.getInt("deptNo"));
 			list.add(m);
 		}
+		
+		conn.close();
 		return list; 
 	}
 	

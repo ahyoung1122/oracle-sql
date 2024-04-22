@@ -3,8 +3,10 @@
 <%@ page import = "dao.*" %>
 <%@ page import = "java.util.*" %>
 <%
-	ArrayList<Integer> list = EmpDAO.selectDeptNoList();
-	ArrayList<HashMap<String,Integer>>groupList = EmpDAO.selectDeptNoCntList();
+	/* ArrayList<Integer> list = EmpDAO.selectDeptNoList(); */
+	ArrayList<HashMap<String, Integer>> groupByList 
+		= EmpDAO.selectDeptNoCntList();
+
 %>
 <!DOCTYPE html>
 <html>
@@ -13,7 +15,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<select name="deptNo">
+	<%-- <select name="deptNo">
 		<option value=""> ::: 선택 :::</option>
 		<%
 			for( Integer i : list ) {
@@ -23,19 +25,21 @@
 			}
 		%>
 		
-	</select>
-	<h1>DISTINCT대신 GROUP BY를 사용해야만 하는 경우</h1>
-		<option value=""> ::: 선택 :::</option>
-		<%
-			for( HashMap<String,Integer> m : groupList) {
-		%>
-				<option value='<%=m.get("deptNo")%>'>
-					<%=m.get("deptNo")%>
-					(<%=m.get("cnt")%>명)
-				</option>
-		<%
-			}
-		%>
-	
+	</select> --%>
+		<h1>DISTINCT대신 GROUP BY를 사용해야만 하는 경우</h1>
+		<select>
+			<option value=""> ::: 선택 :::</option>
+			<%
+				for( HashMap<String,Integer> m : groupByList) {
+			%>
+					<option value='<%=m.get("deptNo")%>'>
+						<%=m.get("deptNo")%>
+						(<%=m.get("cnt")%>명)
+					</option>
+			<%
+				}
+			%>
+		</select> 
+		
 </body>
 </html>

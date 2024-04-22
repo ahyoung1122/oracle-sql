@@ -12,7 +12,8 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
-<body>
+<body>	
+	<h1>CASE식을 이용한 정렬</h1>
 		<select name="empJob">
 		<option value=""> ::: 선택 :::</option>
 		<%
@@ -25,7 +26,6 @@
 		<%
 			}
 		%>
-		
 	</select>
 </body>
 </html>
