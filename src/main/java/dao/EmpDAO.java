@@ -9,6 +9,69 @@ import oracle.jdbc.proxy.annotation.Pre;
 import vo.Emp;
 
 public class EmpDAO {
+	//q004WhereIn.jsp
+	public static ArrayList<Emp> selectEmpListByGrade(
+			ArrayList<Integer> ckList) throws Exception{
+		ArrayList<Emp> list = new ArrayList<>();
+		
+		Connection conn = DBHelper.getConnection();
+		//In연산자를 활용해서 sql작성하기
+		String sql = "SELECT ename, grade"
+				+ " FROM emp"
+				+ " WHERE grade IN ";
+		PreparedStatement stmt = null;
+		//ckList는 ArrayList<Integer>에서 작성된것
+		//여기에는 등급을 나타내는 정수값이 들어가있음.
+		//ckList.size로 size를 이용하는 이유 = 가변적인 정수길이이기때문
+		if(ckList.size() == 1) {
+			sql = sql + "(?)";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, ckList.get(0));
+		}else if(ckList.size() == 2) {
+			sql = sql + "(?,?)";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, ckList.get(0));
+			stmt.setInt(2, ckList.get(1));
+		}else if(ckList.size() == 3) {
+			sql = sql + "(?,?,?)";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, ckList.get(0));
+			stmt.setInt(2, ckList.get(1));
+			stmt.setInt(3, ckList.get(2));
+		}else if(ckList.size() == 4){
+			sql = sql + "(?,?,?,?)";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, ckList.get(0));
+			stmt.setInt(2, ckList.get(1));
+			stmt.setInt(3, ckList.get(2));
+			stmt.setInt(4, ckList.get(3));
+		}else if(ckList.size() == 5) {
+			sql = sql + "(?,?,?,?,?)";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, ckList.get(0));
+			stmt.setInt(2, ckList.get(1));
+			stmt.setInt(3, ckList.get(2));
+			stmt.setInt(4, ckList.get(3));
+			stmt.setInt(5, ckList.get(4));
+		}
+		
+		ResultSet rs = stmt.executeQuery();
+		while(rs.next()) 
+			{
+				Emp e = new Emp();
+				e.setEname(rs.getString("ename"));
+				e.setGrade(rs.getInt("grade"));
+				list.add(e);
+			}
+		/*
+		 where grade in(1) //매개값에 따라서 달라지는것임.
+		 */
+		return list;
+	}
+	
+	
+	
+	//q003Case.jsp
 	public static ArrayList<HashMap<String,String>> selectJobCaseList() 
 			throws Exception {
 		ArrayList<HashMap<String,String>> color = 
