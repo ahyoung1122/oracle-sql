@@ -9,6 +9,133 @@ import oracle.jdbc.proxy.annotation.Pre;
 import vo.Emp;
 
 public class EmpDAO {
+	// 호출 : q007SelfJoin.jsp
+	// parameter :  void
+	//return : HashMap
+	
+	public static ArrayList<HashMap<String,Object>> selfJoinEmp()
+		throws Exception{
+		ArrayList<HashMap<String,Object>> list = 
+				new ArrayList<>();
+		
+		
+		//연결
+		Connection conn = DBHelper.getConnection();
+		//쿼리 가져오기
+		String sql = "select e1.empno empno ,e1.ename ename , e1.grade grade, NVL(e2.ename, '관리자없음') \"mgrName\", NVL(e2.grade, 0) \"mgrGrade\" \r\n"
+				+ "from emp e1 left outer join emp e2\r\n"
+				+ "on e1.mgr = e2.empno\r\n"
+				+ "order by e1.empno asc";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();
+		
+		while(rs.next()) {
+			HashMap<String,Object> m = 
+					new HashMap<String,Object>();
+			
+			m.put("empno", rs.getInt("empno"));
+			m.put("ename", rs.getString("ename"));
+			m.put("grade", rs.getInt("grade"));
+			m.put("mgrName", rs.getString("mgrName"));
+			m.put("mgrGrade", rs.getInt("mgrGrade"));
+			//list에 m을 추가하고 반환해야함.
+			list.add(m);
+		}
+		
+		conn.close();
+		return list;
+	}
+	
+	
+	//q006GroupBy.jsp
+	public static ArrayList<HashMap<String,Integer>> selectEmpSalStates() 
+			throws Exception{
+		ArrayList<HashMap<String,Integer>> list = 
+				new ArrayList<>();
+		//연결먼저
+		Connection conn = DBHelper.getConnection();
+		//emp의 데이터를 다 가지고오고 별칭(알리어스)를 붙여줘서 사용하기 쉽게 만들어준다.
+		 String sql = "SELECT"
+		            + " grade"
+		            + ", COUNT(*) count"
+		            + ", SUM(sal) sum"
+		            + ", AVG(sal) avg"
+		            + ", MAX(sal) max"
+		            + ", MIN(sal) min"
+		            + " FROM emp"
+		            + " GROUP BY grade"
+		            + " ORDER BY grade ASC";//묶어진 grade를 오름차순서로 정리한다 //여기선 1부터 출력됨
+		
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();
+		
+		while(rs.next()) {
+			HashMap<String, Integer> m = new HashMap<>();
+			
+			m.put("grade", rs.getInt("grade"));
+			m.put("count", rs.getInt("count"));
+			m.put("sum", rs.getInt("sum"));
+			m.put("avg", rs.getInt("avg"));
+			m.put("max", rs.getInt("max"));
+			m.put("min", rs.getInt("min"));
+			
+			list.add(m); 
+		}
+		
+		conn.close();
+		return list;
+	}
+	//q005OrderBy.jsp
+	public static ArrayList<Emp> selectEmpListSort(
+			String col, String sort) throws Exception{
+		
+		//매개값 디버깅
+		System.out.println(col + "<==EmpDAO.selectEmpListSort param col");
+		System.out.println(sort + "<==EmpDAO.selectEmpListSort param sort");
+		
+		ArrayList<Emp> list = new ArrayList<>();
+		
+		Connection conn = DBHelper.getConnection();
+		
+		String sql = "SELECT empno, ename"
+				+ " FROM emp";
+		
+		if(col !=null && sort != null) {
+			sql = sql + " ORDER BY "+col+" "+sort;
+		}
+		
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		System.out.println(stmt);
+		
+		ResultSet rs = stmt.executeQuery();
+		while(rs.next()) {
+			Emp e = new Emp();
+			e.setEmpNo(rs.getInt("empno"));
+			e.setEname(rs.getString("ename"));
+			list.add(e);
+		}
+		
+		conn.close();
+		return list;	
+		//물음표 자리에는 데이터값만 들어갈 수 있음.
+		/*
+		 * 없다
+		 * empno ASC
+		 * empno DESC
+		 * ename ASC
+		 * ename DESC
+		 * 매개값에 따라서 쿼리의 모양이 달라진다 -> 동적 쿼리라고 한다
+		 * 
+		 * 동적 쿼리 => parameter(매개값)에 따라 분기되어 차이가 나는 경우
+		 * if문으로 쿼리가 다양해지는것
+		 * 
+		 * 확인해야할것1. 매개값이 넘어왓는지 아닌지 확인부터 해야한다.
+		 * 
+		*/
+	}
+	
+	
+	
 	//q004WhereIn.jsp
 	public static ArrayList<Emp> selectEmpListByGrade(
 			ArrayList<Integer> ckList) throws Exception{
@@ -66,6 +193,7 @@ public class EmpDAO {
 		/*
 		 where grade in(1) //매개값에 따라서 달라지는것임.
 		 */
+		conn.close();
 		return list;
 	}
 	
@@ -179,6 +307,7 @@ public class EmpDAO {
 			m.put("dname", rs.getString("dname"));
 			list.add(m);
 		}
+		conn.close();
 		return list;
 	}
 	
@@ -202,7 +331,7 @@ public class EmpDAO {
 			e.setSal( rs.getDouble("sal"));
 			list.add(e);
 		}
-		
+		conn.close();
 		return list;
 	}
 }
